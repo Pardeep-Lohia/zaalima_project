@@ -62,7 +62,7 @@ results = run_complete_pipeline(
      - **Rolling Statistics**: Mean, std, variance (1h, 6h, 12h windows)
      - **Trend Analysis**: EMA (12h, 24h), rate of change
      - **Temporal Features**: Lag features (t-1, t-2)
-   - **Total Features**: ~45 per sensor × 3 sensors = 135 features
+   - **Total Features**: ~45 per sensor × 3 sensors = 42 features
 
 3. **Data Quality Handling**
    - NaN handling: Forward/backward fill for rolling features
@@ -76,7 +76,7 @@ results = run_complete_pipeline(
 5. **Pipeline Serialization**
    - Save feature engineering pipeline to `models/feature_pipeline.joblib`
 
-**Output**: `train_features`, `val_features` (scaled DataFrames with 135 features)
+**Output**: `train_features`, `val_features` (scaled DataFrames with 42 features)
 
 ---
 
@@ -247,7 +247,7 @@ Raw Data Generation
         ↓
 Time-Aware Split (70/30)
         ↓
-Feature Engineering (135 features)
+Feature Engineering (42 features)
         ↓
 Baseline Training (LR + RF)
         ↓
@@ -311,7 +311,7 @@ failure_probabilities = predictions[:, 1]
 | Phase | Time Estimate | Description |
 |-------|---------------|-------------|
 | Data Preparation | 1-2 minutes | Generate/load and preprocess data |
-| Feature Engineering | 2-3 minutes | Create 135 time-series features |
+| Feature Engineering | 2-3 minutes | Create 42 time-series features |
 | Baseline Training | 3-5 minutes | Train LR + RF with evaluation |
 | Production Training | 15-45 minutes | XGBoost with 50 Optuna trials |
 | Threshold Optimization | 1-2 minutes | Find optimal decision boundaries |
@@ -352,7 +352,7 @@ FactoryGuard AI/
 ## 🎯 **Success Indicators**
 
 - **Data Pipeline**: No NaN values, proper temporal ordering
-- **Feature Engineering**: 135 features created without errors
+- **Feature Engineering**: 42 features created without errors
 - **Model Training**: PR-AUC > 0.80 for baselines, > 0.85 for production
 - **Evaluation**: Comprehensive reports generated
 - **Business Value**: Clear cost savings projections in executive summary

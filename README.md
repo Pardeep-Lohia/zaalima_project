@@ -5,7 +5,7 @@
 FactoryGuard AI is a machine learning pipeline designed for predictive maintenance in industrial IoT settings. The system predicts equipment failures 24 hours in advance using time-series sensor data from temperature, vibration, and pressure sensors. The project focuses on handling highly imbalanced datasets where failures are rare (<1% occurrence rate).
 
 **Key Technical Features:**
-- Time-series feature engineering with 135+ engineered features
+- Time-series feature engineering with 42+ engineered features
 - Class imbalance handling using balanced class weights
 - Hyperparameter tuning with Optuna (Bayesian optimization)
 - Evaluation focused on PR-AUC for imbalanced classification
@@ -31,7 +31,7 @@ python -c "from src.complete_pipeline import run_complete_pipeline; results = ru
 
 **Expected Output:**
 - Synthetic IoT data generated (10,000 samples)
-- Feature engineering pipeline created (135 features)
+- Feature engineering pipeline created (42 features)
 - Baseline models trained (Logistic Regression, Random Forest)
 - Production model trained (XGBoost with hyperparameter tuning)
 - Evaluation reports and plots saved in `reports/` folder
@@ -63,7 +63,7 @@ python -c "from src.complete_pipeline import run_complete_pipeline; results = ru
 
 ### **Current Implementation Status**
 - ✅ **Data Pipeline**: Synthetic IoT data generation with realistic failure patterns
-- ✅ **Feature Engineering**: 135+ time-series features from 3 sensors
+- ✅ **Feature Engineering**: 42+ time-series features from 3 sensors
 - ✅ **Model Training**: Baseline (LR, RF) and production (XGBoost/LightGBM) models
 - ✅ **Evaluation**: PR-AUC focused metrics for imbalanced classification
 - ✅ **Hyperparameter Tuning**: Optuna Bayesian optimization (up to 50 trials)
@@ -93,7 +93,7 @@ FactoryGuard AI/
 ├── src/                          # Source code modules (11 files, ~2,000 lines)
 │   ├── utils.py                  # Logging, path utilities, and project configuration
 │   ├── data_preprocessing.py     # Synthetic data generation and time-aware train/val split
-│   ├── feature_engineering.py    # Time-series feature engineering (135 features from 3 sensors)
+│   ├── feature_engineering.py    # Time-series feature engineering (42 features from 3 sensors)
 │   ├── train_baseline.py         # Logistic Regression and Random Forest baseline models
 │   ├── train_production_model.py # XGBoost/LightGBM with Optuna hyperparameter tuning
 │   ├── complete_pipeline.py      # End-to-end pipeline orchestration
@@ -141,7 +141,7 @@ FactoryGuard AI/
   - `analyze_class_distribution()`: Reports class imbalance statistics
 
 - **`src/feature_engineering.py`**: 
-  - `FeatureEngineer` class: Handles 135 engineered features from 3 sensors
+  - `FeatureEngineer` class: Handles 42 engineered features from 3 sensors
   - Rolling statistics (1h, 6h, 12h windows), EMAs, lag features, rate of change
   - `create_feature_pipeline()`: End-to-end feature engineering with scaling
 
@@ -203,7 +203,7 @@ For each sensor (temperature, vibration, pressure), we create:
 - **NaN Handling**: Forward/backward fill for lag features, bfill/ffill for rolling features
 - **Standardization**: Z-score normalization fitted on training data only
 
-**Total Features**: ~45 engineered features per sensor (135+ total)
+**Total Features**: ~45 engineered features per sensor (42+ total)
 
 ## Class Imbalance Strategy
 
@@ -264,7 +264,7 @@ In imbalanced datasets (<1% positive class), accuracy can be >99% by predicting 
 - **Evaluation**: Focus on PR-AUC for imbalanced classification, with comprehensive metrics
 
 ### **Key Technical Achievements**
-- **Feature Engineering**: Successfully created 135+ time-series features from 3 sensors
+- **Feature Engineering**: Successfully created 42+ time-series features from 3 sensors
 - **Class Imbalance**: Implemented balanced class weights to handle <1% failure rate
 - **Hyperparameter Tuning**: Optuna optimization with up to 50 trials
 - **Time-Series Handling**: Chronological splits prevent data leakage
@@ -329,7 +329,7 @@ Raw Sensor Data → Feature Engineering → Scaling → Model Prediction → Ale
    ```
 
 3. **Key Classes and Functions**:
-   - `FeatureEngineer`: Handles time-series feature creation (135 features)
+   - `FeatureEngineer`: Handles time-series feature creation (42 features)
    - `BaselineModelTrainer`: Logistic Regression and Random Forest with class weights
    - `ProductionModelTrainer`: XGBoost/LightGBM with Optuna hyperparameter tuning
    - `generate_synthetic_iot_data()`: Creates realistic IoT sensor data with failure patterns
