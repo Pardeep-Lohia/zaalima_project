@@ -1,78 +1,40 @@
 # FactoryGuard AI - IoT Predictive Maintenance Engine
 
-## 🎯 **Executive Summary**
+## 🎯 **Project Overview**
 
-FactoryGuard AI revolutionizes industrial maintenance by predicting equipment failures **24 hours in advance** using IoT sensor data. Our AI system achieves **89% prediction accuracy** (PR-AUC) on rare failure events, enabling proactive maintenance that saves thousands of dollars in downtime costs.
+FactoryGuard AI is a machine learning pipeline designed for predictive maintenance in industrial IoT settings. The system predicts equipment failures 24 hours in advance using time-series sensor data from temperature, vibration, and pressure sensors. The project focuses on handling highly imbalanced datasets where failures are rare (<1% occurrence rate).
 
-**Key Business Value:**
-- 🚀 **35% improvement** over random guessing
-- 💰 **$50K+ savings** per prevented failure (based on industry averages)
-- ⚡ **24-hour advance warning** for maintenance planning
-- 🎯 **High precision alerts** minimize false maintenance calls
+**Key Technical Features:**
+- Time-series feature engineering with 135+ engineered features
+- Class imbalance handling using balanced class weights
+- Hyperparameter tuning with Optuna (Bayesian optimization)
+- Evaluation focused on PR-AUC for imbalanced classification
+- Modular pipeline architecture for maintainability
 
-**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Production-ready ML pipeline with comprehensive evaluation
+**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented and evaluated. Ready for Week 3 enhancements (explainability, API, deployment).
 
-## 🚀 **Quick Start (5 Minutes)**
+## 🚀 **Quick Start (Developer Setup)**
 
-**For Customers & Stakeholders:**
+**Prerequisites:**
+- Python 3.8+
+- 8GB+ RAM recommended
+- Dependencies: `pip install -r requirements.txt`
+
+**Run Complete Pipeline:**
 ```bash
-# 1. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 2. Run complete pipeline (data → model → evaluation)
-python -c "from src.complete_pipeline import run_complete_pipeline, print_pipeline_summary; results = run_complete_pipeline(regenerate_data=True, model_type='xgboost', tune_hyperparams=True, n_trials=20, save_all=True); print_pipeline_summary(results)"
-
-# 3. View results in reports/ folder
-# - executive_summary.md: Business-friendly summary
-# - model_comparison.csv: Performance metrics
-# - *_pr_curve.png: Precision-Recall curves
+# Run end-to-end pipeline (data generation → feature engineering → model training → evaluation)
+python -c "from src.complete_pipeline import run_complete_pipeline; results = run_complete_pipeline(regenerate_data=True, model_type='xgboost', tune_hyperparams=True, n_trials=20, save_all=True)"
 ```
 
 **Expected Output:**
-- ✅ **89% prediction accuracy** (PR-AUC) on failure detection
-- ✅ **24-hour advance warning** for equipment failures
-- ✅ **Business-ready reports** with cost-benefit analysis
-
-## 💰 **Business Benefits**
-
-### **Cost Savings Calculator**
-Based on industry averages ($50K/hour downtime cost):
-- **Without FactoryGuard**: Reactive maintenance after failure
-- **With FactoryGuard**: 24-hour advance warning enables planned maintenance
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Detection Rate** | 0% (reactive) | 89% | +89% |
-| **Downtime Cost** | $50K/failure | $5K/failure | **90% reduction** |
-| **ROI Timeline** | - | 3-6 months | **Payback in <6 months** |
-
-### **Operational Impact**
-- **🔧 Maintenance Planning**: Schedule repairs during off-hours
-- **📈 Production Uptime**: Minimize unplanned shutdowns
-- **👥 Safety**: Prevent hazardous failure scenarios
-- **💡 Resource Optimization**: Focus maintenance teams on high-risk equipment
-
-## 🏭 **Customer Success Stories**
-
-### **Manufacturing Plant A**
-- **Industry**: Automotive assembly line
-- **Challenge**: $200K/month in unplanned downtime costs
-- **Solution**: FactoryGuard AI deployed on 50 critical machines
-- **Results**:
-  - 85% reduction in unplanned failures
-  - $150K/month cost savings
-  - 30% increase in maintenance team efficiency
-  - ROI achieved in 2 months
-
-### **Chemical Processing Plant B**
-- **Industry**: Petrochemical processing
-- **Challenge**: Safety-critical equipment with high failure costs
-- **Solution**: 24-hour advance failure prediction
-- **Results**:
-  - Zero safety incidents prevented
-  - 95% of failures predicted in advance
-  - Regulatory compliance improved
-  - Insurance premiums reduced by 25%
+- Synthetic IoT data generated (10,000 samples)
+- Feature engineering pipeline created (135 features)
+- Baseline models trained (Logistic Regression, Random Forest)
+- Production model trained (XGBoost with hyperparameter tuning)
+- Evaluation reports and plots saved in `reports/` folder
 
 ## 📋 **Technical Specifications**
 
@@ -97,72 +59,28 @@ Based on industry averages ($50K/hour downtime cost):
 - **Historical Data**: Minimum 1,000 samples recommended
 - **Real-time**: REST API for live predictions
 
-## 👥 **Getting Started for Different Users**
+## 📊 **Development Status & Technical Challenges**
 
-### **For Business Executives**
-```bash
-# Quick demo - see results in 5 minutes
-pip install -r requirements.txt
-python -c "from src.complete_pipeline import run_complete_pipeline, print_pipeline_summary; results = run_complete_pipeline(regenerate_data=True, model_type='xgboost', tune_hyperparams=True, n_trials=10, save_all=True); print_pipeline_summary(results)"
+### **Current Implementation Status**
+- ✅ **Data Pipeline**: Synthetic IoT data generation with realistic failure patterns
+- ✅ **Feature Engineering**: 135+ time-series features from 3 sensors
+- ✅ **Model Training**: Baseline (LR, RF) and production (XGBoost/LightGBM) models
+- ✅ **Evaluation**: PR-AUC focused metrics for imbalanced classification
+- ✅ **Hyperparameter Tuning**: Optuna Bayesian optimization (up to 50 trials)
+- 🔄 **Week 3 Planned**: SHAP explainability, Flask API, Docker deployment
 
-# Check reports/executive_summary.md for business impact analysis
-```
+### **Key Technical Challenges Addressed**
+- **Class Imbalance**: <1% failure rate requires specialized handling (balanced class weights)
+- **Time-Series Leakage**: Chronological train/val split prevents data leakage
+- **Feature Engineering**: NaN handling for rolling/lag operations in time-series data
+- **Scalability**: Memory-efficient processing for large datasets
+- **Reproducibility**: Fixed random seeds and modular architecture
 
-### **For Data Scientists**
-```python
-# Full pipeline with custom parameters
-from src.complete_pipeline import run_complete_pipeline
-
-results = run_complete_pipeline(
-    regenerate_data=True,      # Fresh synthetic data
-    model_type='xgboost',      # or 'lightgbm'
-    tune_hyperparams=True,     # Bayesian optimization
-    n_trials=50,              # Optimization trials
-    save_all=True             # Generate all reports
-)
-```
-
-### **For IT/DevOps Teams**
-```bash
-# Production deployment setup
-pip install -r requirements.txt
-
-# Run validation tests
-python -c "from src.complete_pipeline import run_complete_pipeline; run_complete_pipeline(regenerate_data=False, model_type='xgboost', tune_hyperparams=False, save_all=False)"
-
-# Models saved in models/ directory
-# Ready for containerization or API deployment
-```
-
-### **For Maintenance Engineers**
-```python
-# Load trained model for predictions
-from joblib import load
-from src.feature_engineering import FeatureEngineer
-
-model = load('models/production_xgboost.joblib')
-feature_engineer = FeatureEngineer()
-feature_engineer.load_pipeline('models/feature_pipeline.joblib')
-
-# Your sensor data → predictions
-# See "Production Inference" section below
-```
-
-## Business Problem
-
-In industrial settings, equipment failures are extremely rare (<1% occurrence rate) but have significant consequences:
-- **High Cost**: Unplanned downtime can cost thousands of dollars per hour
-- **Safety Risks**: Failures may pose safety hazards to workers
-- **Production Loss**: Interruptions in manufacturing processes
-
-Traditional maintenance approaches are either:
-- **Reactive**: Fix after failure occurs
-- **Preventive**: Schedule maintenance at fixed intervals (often unnecessary)
-
-FactoryGuard AI enables **predictive maintenance** by:
-- Detecting failure patterns 24 hours in advance
-- Prioritizing high-precision predictions to avoid false alarms
-- Reducing unnecessary maintenance costs
+### **Architecture Decisions**
+- **Modular Design**: Separate modules for data, features, training, evaluation
+- **Joblib Serialization**: Efficient model and pipeline persistence
+- **Time-Series CV**: Proper cross-validation for temporal data
+- **PR-AUC Focus**: Appropriate metric for rare event prediction
 
 ## Architecture
 
@@ -337,44 +255,26 @@ In imbalanced datasets (<1% positive class), accuracy can be >99% by predicting 
 - Regularization terms (alpha, lambda)
 - Class weight scaling
 
-## Performance Results
+## 📈 **Current Performance & Validation**
 
-### Baseline Model Comparison
-| Model | PR-AUC | Precision | Recall | F1-Score |
-|-------|--------|-----------|--------|----------|
-| Logistic Regression | 0.8234 | 0.7892 | 0.8123 | 0.8006 |
-| Random Forest | 0.8567 | 0.8234 | 0.8456 | 0.8343 |
+### **Model Performance Summary**
+- **Baseline Models**: Logistic Regression (PR-AUC: 0.82) and Random Forest (PR-AUC: 0.86)
+- **Production Models**: XGBoost (PR-AUC: 0.89) and LightGBM (PR-AUC: 0.89)
+- **Improvement**: ~35% better than random guessing on PR-AUC metric
+- **Evaluation**: Focus on PR-AUC for imbalanced classification, with comprehensive metrics
 
-**Best Baseline**: Random Forest (PR-AUC: 0.8567)
+### **Key Technical Achievements**
+- **Feature Engineering**: Successfully created 135+ time-series features from 3 sensors
+- **Class Imbalance**: Implemented balanced class weights to handle <1% failure rate
+- **Hyperparameter Tuning**: Optuna optimization with up to 50 trials
+- **Time-Series Handling**: Chronological splits prevent data leakage
+- **Modular Architecture**: Clean separation of concerns across 11 modules
 
-### Production Model Comparison
-| Model | PR-AUC | Precision | Recall | F1-Score | Improvement |
-|-------|--------|-----------|--------|----------|-------------|
-| XGBoost | 0.8921 | 0.8678 | 0.8789 | 0.8733 | +4.2% |
-| LightGBM | 0.8894 | 0.8634 | 0.8765 | 0.8699 | +3.8% |
-
-**Best Production Model**: XGBoost (PR-AUC: 0.8921)
-
-### Key Insights
-- **35% improvement** over random guessing (PR-AUC baseline ~0.5)
-- **High precision** minimizes false maintenance calls
-- **Good recall** ensures most failures are caught
-- **Production-ready** with proper feature engineering and tuning
-
-## Feature Importance (Top 10)
-
-Based on XGBoost feature importance:
-
-1. `temperature_rolling_std_1H` - Recent temperature variability
-2. `vibration_ema_12` - 12-hour vibration trend
-3. `pressure_rolling_mean_6H` - 6-hour pressure average
-4. `temperature_roc_1` - Temperature rate of change
-5. `vibration_lag_1` - Previous hour vibration
-6. `pressure_rolling_std_12H` - Long-term pressure stability
-7. `temperature_ema_24` - 24-hour temperature trend
-8. `vibration_rolling_var_1H` - Short-term vibration variance
-9. `pressure_lag_2` - Two hours ago pressure
-10. `temperature_rolling_mean_12H` - 12-hour temperature average
+### **Validation Approach**
+- **Cross-Validation**: Time-series aware 3-fold CV during hyperparameter tuning
+- **Metrics**: PR-AUC primary, precision/recall/F1 secondary
+- **Threshold Optimization**: Decision threshold tuning for operational constraints
+- **Reports**: Automated generation of confusion matrices, PR curves, and feature importance
 
 ## Production Deployment Considerations
 
