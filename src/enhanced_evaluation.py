@@ -188,14 +188,24 @@ class RareEventEvaluator:
 
         # Daily alert volume simulation
         daily_alerts = self.simulate_daily_alert_volume()
-
+        # Align array lengths safely (required for rare-event data)
+        min_len = min(
+            len(self.thresholds),
+            len(self.precision) - 1,
+            len(self.recall) - 1
+        )
         # Threshold vs metrics table
         threshold_table = pd.DataFrame({
-            'threshold': self.thresholds,
-            'precision': self.precision[:-1],  # Remove last element to match thresholds
-            'recall': self.recall[:-1],
-            'f1': 2 * self.precision[:-1] * self.recall[:-1] / (self.precision[:-1] + self.recall[:-1])
-        }).fillna(0)
+            'threshold': self.thresholds[:min_len],
+            'precision': self.precision[:min_len],
+            'recall': self.recall[:min_len]
+        })
+        threshold_table['f1'] = (
+        2 * threshold_table['precision'] * threshold_table['recall'] /
+        (threshold_table['precision'] + threshold_table['recall'] + 1e-9)
+        )
+
+        threshold_table = threshold_table.fillna(0)
 
         report = {
             'model_name': model_name,
@@ -255,8 +265,18 @@ class RareEventEvaluator:
 
         # Plot 2: Threshold vs Precision/Recall
         ax2 = axes[0, 1]
-        ax2.plot(self.thresholds, self.precision[:-1], 'b-', label='Precision', linewidth=2)
-        ax2.plot(self.thresholds, self.recall[:-1], 'r-', label='Recall', linewidth=2)
+        min_len = min(
+            len(self.thresholds),
+            len(self.precision),
+            len(self.recall)
+        )
+        
+        thresholds = self.thresholds[:min_len]
+        precision = self.precision[:min_len]
+        recall = self.recall[:min_len]
+        
+        ax2.plot(thresholds, precision, label='Precision', linewidth=2)
+        ax2.plot(thresholds, recall, label='Recall', linewidth=2)
         ax2.set_xlabel('Threshold')
         ax2.set_ylabel('Score')
         ax2.set_title('Threshold vs Precision/Recall')

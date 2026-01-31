@@ -1,0 +1,8 @@
+metric_type,metric_name,value,threshold,additional_info
+recall_at_fpr,Recall @ 1.0% FPR,0.0,0.9996732052420922,"Precision: 0.000, Alerts/day: 0.0"
+recall_at_fpr,Recall @ 5.0% FPR,0.0,0.9273664094615535,"Precision: 0.000, Alerts/day: 1.6"
+recall_at_fpr,Recall @ 10.0% FPR,0.05263157894736842,0.8766052783705984,"Precision: 0.003, Alerts/day: 2.6"
+precision_at_k,Precision @ Top-10,0.0,0.998421233923774,"Recall: 0.000, Alerts/day: 0.1"
+precision_at_k,Precision @ Top-25,0.0,0.9916730528316782,"Recall: 0.000, Alerts/day: 0.2"
+precision_at_k,Precision @ Top-50,0.0,0.9813771043261948,"Recall: 0.000, Alerts/day: 0.4"
+precision_at_k,Precision @ Top-100,0.0,0.9594395957411649,"Recall: 0.000, Alerts/day: 0.8"

@@ -166,7 +166,7 @@ def run_complete_pipeline(
         model_comparison.to_csv(reports_dir / 'model_comparison.csv', index=False)
 
         # Save executive summary
-        with open(reports_dir / 'executive_summary.md', 'w') as f:
+        with open(reports_dir / 'executive_summary.md', 'w', encoding="utf-8") as f:
             f.write(executive_summary)
 
         # Save detailed evaluation reports
