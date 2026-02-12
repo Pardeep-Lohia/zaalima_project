@@ -240,6 +240,106 @@ results = run_complete_pipeline(
 
 **Final Output**: Complete results dictionary with all pipeline artifacts
 
+---
+
+### **Phase 9: API Deployment**
+**File**: `src/api.py`, `app.py`
+**Function**: Flask application setup
+
+1. **Model and Pipeline Loading**
+   - Load production XGBoost model from `models/production_xgboost.joblib`
+   - Load feature engineering pipeline from `models/feature_pipeline.joblib`
+   - Initialize Flask application with proper configuration
+
+2. **API Endpoint Creation**
+   - **POST /predict**: Real-time failure prediction endpoint
+     - Accept JSON payload: `{"temperature": float, "vibration": float, "pressure": float}`
+     - Process through feature engineering pipeline
+     - Return prediction results: `{"failure_probability": float, "prediction": str, "latency_ms": float, "timestamp": str}`
+   - **GET /health**: Service health check endpoint
+     - Verify model and pipeline loading status
+     - Return system status
+
+3. **Request Processing**
+   - Input validation and error handling
+   - Feature engineering transformation
+   - Model prediction with probability outputs
+   - Latency measurement and logging
+
+4. **Error Handling**
+   - Invalid input validation
+   - Model loading failures
+   - Processing exceptions with appropriate HTTP status codes
+
+**Output**: Running Flask API server ready for real-time predictions
+
+---
+
+### **Phase 10: Explainability Analysis**
+**File**: `src/explainability.py`
+**Function**: `create_explainability_report()`
+
+1. **SHAP Explainer Initialization**
+   - Load production model and feature pipeline
+   - Initialize SHAP TreeExplainer for XGBoost/LightGBM
+   - Prepare validation data for analysis
+
+2. **Global Feature Importance**
+   - Generate SHAP summary plot showing feature contributions
+   - Calculate mean absolute SHAP values for feature ranking
+   - Identify most influential sensors and time windows
+
+3. **Local Explanations**
+   - Create waterfall plots for individual predictions
+   - Explain specific failure predictions with feature contributions
+   - Generate example explanations for maintenance engineers
+
+4. **Report Generation**
+   - Save SHAP plots to `reports/shap_summary_plot.png`
+   - Save waterfall examples to `reports/shap_waterfall_example.png`
+   - Include feature importance statistics in results
+
+**Output**: SHAP explainability reports and plots for model interpretability
+
+---
+
+### **Phase 11: Production Deployment**
+**File**: `src/deploy.py`, `DEPLOYMENT_GUIDE.md`
+**Function**: Server deployment utilities
+
+1. **Environment Preparation**
+   - Virtual environment setup and dependency installation
+   - Directory structure creation for production deployment
+   - Configuration file generation
+
+2. **Gunicorn Configuration**
+   - Create `gunicorn.conf.py` with production settings
+   - Configure worker processes and threading
+   - Set up logging and monitoring
+
+3. **Nginx Setup**
+   - Generate nginx site configuration
+   - Configure reverse proxy for Gunicorn
+   - SSL/TLS certificate setup (optional)
+
+4. **Systemd Service Creation**
+   - Create systemd service file for auto-startup
+   - Configure service monitoring and restart policies
+   - Enable service and verify startup
+
+5. **Security Hardening**
+   - Firewall configuration (UFW)
+   - SSH hardening and fail2ban setup
+   - Log rotation configuration
+
+6. **Deployment Verification**
+   - Health endpoint testing
+   - Prediction endpoint validation
+   - Latency benchmarking
+   - Load testing recommendations
+
+**Output**: Production-ready deployment with monitoring and security configurations
+
 ## 📊 **Data Flow Diagram**
 
 ```
@@ -287,6 +387,13 @@ baseline_results = train_baseline_models()
 # 4. Production model
 from src.train_production_model import train_production_model
 prod_results = train_production_model('xgboost', n_trials=20)
+
+# 5. API deployment (optional)
+python app.py  # Start Flask API server
+
+# 6. Explainability analysis (optional)
+from src.explainability import create_explainability_report
+explainability_results = create_explainability_report(save_plots=True)
 ```
 
 ### **Inference (Production Use)**
@@ -317,7 +424,10 @@ failure_probabilities = predictions[:, 1]
 | Threshold Optimization | 1-2 minutes | Find optimal decision boundaries |
 | Enhanced Evaluation | 2-3 minutes | Generate business reports |
 | Report Generation | 1-2 minutes | Create plots and CSVs |
-| **Total** | **25-65 minutes** | Complete pipeline execution |
+| API Deployment | <1 minute | Start Flask server |
+| Explainability Analysis | 2-5 minutes | Generate SHAP plots and reports |
+| Production Deployment | 10-15 minutes | VPS setup and configuration |
+| **Total** | **35-85 minutes** | Complete pipeline execution |
 
 ## 🔍 **Key Decision Points**
 
@@ -352,9 +462,12 @@ FactoryGuard AI/
 ## 🎯 **Success Indicators**
 
 - **Data Pipeline**: No NaN values, proper temporal ordering
-- **Feature Engineering**: 42 features created without errors
+- **Feature Engineering**: 82 features created without errors
 - **Model Training**: PR-AUC > 0.80 for baselines, > 0.85 for production
-- **Evaluation**: Comprehensive reports generated
+- **API Deployment**: Flask server starts successfully, endpoints respond correctly
+- **Explainability**: SHAP plots generated, feature importance computed
+- **Deployment**: Production server configured with monitoring and security
+- **Evaluation**: Comprehensive reports generated with business KPIs
 - **Business Value**: Clear cost savings projections in executive summary
 
 ---

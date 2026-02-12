@@ -11,7 +11,7 @@ FactoryGuard AI is a machine learning pipeline designed for predictive maintenan
 - Evaluation focused on PR-AUC for imbalanced classification
 - Modular pipeline architecture for maintainability
 
-**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented with recent XGBoost fixes achieving PR-AUC: 0.0487 (2.4x improvement from 0.02 baseline). Ready for Week 3 enhancements (explainability, API, deployment).
+**Current Status**: ✅ **Week 1, Week 2 & Week 3 COMPLETED** - Full ML pipeline with XGBoost (PR-AUC: 0.0487), Flask REST API, SHAP explainability, and production deployment ready. All core features implemented and tested.
 
 ## 🚀 **Quick Start (Developer Setup)**
 
@@ -90,7 +90,7 @@ FactoryGuard AI/
 │   ├── synthetic_iot_data.csv     # Generated synthetic IoT data (10,000 samples, 0.56% failure rate)
 │   ├── train_raw.csv             # Training split (7,000 samples) - chronological first 70%
 │   └── val_raw.csv               # Validation split (3,000 samples) - chronological last 30%
-├── src/                          # Source code modules (11 files, ~2,000 lines)
+├── src/                          # Source code modules (14 files, ~2,500 lines)
 │   ├── utils.py                  # Logging, path utilities, and project configuration
 │   ├── data_preprocessing.py     # Synthetic data generation and time-aware train/val split
 │   ├── feature_engineering.py    # Time-series feature engineering (42 features from 3 sensors)
@@ -99,7 +99,21 @@ FactoryGuard AI/
 │   ├── complete_pipeline.py      # End-to-end pipeline orchestration
 │   ├── enhanced_evaluation.py    # Rare event evaluation metrics and business KPIs
 │   ├── threshold_optimization.py # Decision threshold optimization for alert budgets
-│   ├── threshold_optimization.py # (duplicate - can be removed)
+│   ├── api.py                    # Flask REST API for real-time predictions
+│   ├── explainability.py         # SHAP-based model explainability and feature importance
+│   ├── deploy.py                 # Production deployment utilities and scripts
+├── app.py                        # Main Flask application entry point
+├── reports/                       # Evaluation outputs, plots, and analysis reports
+│   ├── baseline_*_confusion_matrix.png
+│   ├── baseline_*_pr_curve.png
+│   ├── production_*_confusion_matrix.png
+│   ├── production_*_pr_curve.png
+│   ├── shap_summary_plot.png      # Global SHAP feature importance
+│   ├── shap_waterfall_example.png # Local SHAP explanation example
+│   ├── *_feature_importance.csv
+│   ├── *_best_params.csv
+│   ├── model_comparison.csv
+│   └── executive_summary.md
 ├── models/                        # Serialized ML models and preprocessing pipelines
 │   ├── feature_pipeline.joblib    # Feature engineering pipeline (scaler + feature creation)
 │   ├── baseline_logistic_regression.joblib
@@ -110,13 +124,16 @@ FactoryGuard AI/
 │   ├── baseline_*_pr_curve.png
 │   ├── production_*_confusion_matrix.png
 │   ├── production_*_pr_curve.png
+│   ├── shap_summary_plot.png      # Global SHAP feature importance
+│   ├── shap_waterfall_example.png # Local SHAP explanation example
 │   ├── *_feature_importance.csv
 │   ├── *_best_params.csv
 │   ├── model_comparison.csv
 │   └── executive_summary.md
+├── DEPLOYMENT_GUIDE.md            # VPS deployment instructions
+├── TODO.md                        # Deployment checklist and status
 ├── PROJECT_STATUS.md              # Current project status and handover notes
-├── TODO.md                        # Recent refactoring tasks and completion status
-└── requirements.txt               # Python dependencies (13 packages)
+└── requirements.txt               # Python dependencies (15 packages)
 ```
 
 ### Directory Significance
@@ -371,7 +388,57 @@ baseline_results = train_baseline_models()
 production_results = train_production_model('xgboost', n_trials=50)
 ```
 
-### Inference
+### REST API Usage
+```python
+# Start the Flask API server
+python app.py
+
+# Or run directly
+python -c "from src.api import app; app.run(host='0.0.0.0', port=5000, debug=False)"
+```
+
+**API Endpoints:**
+- **POST /predict**: Real-time failure prediction
+  ```bash
+  curl -X POST http://localhost:5000/predict \
+    -H "Content-Type: application/json" \
+    -d '{"temperature": 75.5, "vibration": 0.8, "pressure": 105.2}'
+  ```
+  Response:
+  ```json
+  {
+    "failure_probability": 0.023,
+    "prediction": "low_risk",
+    "latency_ms": 45.2,
+    "timestamp": "2024-01-15T10:30:00"
+  }
+  ```
+
+- **GET /health**: Service health check
+  ```bash
+  curl http://localhost:5000/health
+  ```
+  Response:
+  ```json
+  {
+    "status": "healthy",
+    "model_loaded": true,
+    "pipeline_loaded": true
+  }
+  ```
+
+### SHAP Explainability
+```python
+from src.explainability import create_explainability_report
+
+# Generate complete explainability report
+results = create_explainability_report(save_plots=True)
+
+# Results include global feature importance and local explanations
+print(f"Top features: {results['global_explanation']['feature_importance'].head()}")
+```
+
+### Inference (Programmatic)
 ```python
 from joblib import load
 from src.feature_engineering import FeatureEngineer
@@ -602,26 +669,28 @@ print("Class distribution:", df['failure'].value_counts())
 - **Python**: 3.8+
 - **Memory**: 8GB+ RAM recommended (16GB+ for large datasets)
 - **Storage**: 2GB+ for models, data, and reports
-- **Dependencies**: 13 packages (see `requirements.txt`)
+- **Dependencies**: 15 packages (see `requirements.txt`)
   - Core ML: scikit-learn, xgboost, lightgbm, optuna
   - Data: pandas, numpy
   - Visualization: matplotlib, seaborn
   - Utils: joblib, imbalanced-learn
+  - API: flask, shap
 - **Optional**: GPU acceleration for XGBoost/LightGBM training
 
 ## Future Enhancements
 
-### Week 3+ Scope (Not Implemented)
-- **SHAP Explainability**: Feature contribution analysis
-- **Flask API**: RESTful prediction service
-- **Deployment**: Docker containerization
-- **Latency Optimization**: Model compression and quantization
+### Week 4+ Scope (Not Implemented)
+- **Docker Containerization**: Production containerization for deployment
+- **Model Compression**: Quantization and optimization for edge deployment
+- **Multi-step Prediction**: Beyond 24-hour horizon forecasting
+- **Real-time Streaming**: Integration with Kafka/Redis for live data streams
 
 ### Advanced Features
-- **Multi-step Prediction**: Beyond 24-hour horizon
 - **Anomaly Detection**: Unsupervised failure pattern discovery
-- **Ensemble Methods**: Model stacking and blending
+- **Ensemble Methods**: Model stacking and blending approaches
 - **Domain Adaptation**: Transfer learning across equipment types
+- **Automated Retraining**: Continuous learning pipelines
+- **A/B Testing**: Model comparison and gradual rollout
 
 ## Contributing
 
