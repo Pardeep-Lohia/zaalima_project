@@ -70,6 +70,20 @@ class FeatureEngineer:
                     df[sensor].rolling(window=window, min_periods=2).var()
                 )
 
+                # Rolling max and min
+                df[f'{sensor}_rolling_max_{window}'] = (
+                    df[sensor].rolling(window=window, min_periods=1).max()
+                )
+
+                df[f'{sensor}_rolling_min_{window}'] = (
+                    df[sensor].rolling(window=window, min_periods=1).min()
+                )
+
+                # Rolling range (max - min)
+                df[f'{sensor}_rolling_range_{window}'] = (
+                    df[f'{sensor}_rolling_max_{window}'] - df[f'{sensor}_rolling_min_{window}']
+                )
+
 
             # Exponential moving averages
             df[f'{sensor}_ema_12'] = df[sensor].ewm(span=12, adjust=False).mean()
@@ -82,8 +96,20 @@ class FeatureEngineer:
             # Rate of change (difference from lag)
             df[f'{sensor}_roc_1'] = df[sensor] - df[f'{sensor}_lag_1']
 
+            # Rolling slope (trend over last 6h using linear regression)
+            df[f'{sensor}_rolling_slope_6h'] = self._calculate_rolling_slope(df[sensor], '6h')
+
         # Reset index
         df.reset_index(inplace=True)
+
+        # Add interaction features
+        self._add_interaction_features(df)
+
+        # Add delta features
+        self._add_delta_features(df)
+
+        # Add failure proximity features
+        self._add_failure_proximity_features(df)
 
         # Handle NaNs created by rolling/lag operations
         df = self._handle_nans(df)
@@ -91,6 +117,76 @@ class FeatureEngineer:
         logger.info(f"Created {len(df.columns) - 4} additional features")  # -4 for timestamp and original sensors + failure
 
         return df
+
+    def _calculate_rolling_slope(self, series: pd.Series, window: str) -> pd.Series:
+        """
+        Calculate rolling slope using linear regression over a time window.
+
+        Args:
+            series: Time series data
+            window: Rolling window size (e.g., '6h')
+
+        Returns:
+            Series with rolling slope values
+        """
+        def slope_func(x):
+            if len(x) < 2:
+                return 0
+            # Create time index for regression
+            t = np.arange(len(x))
+            try:
+                slope = np.polyfit(t, x, 1)[0]
+                return slope
+            except:
+                return 0
+
+        return series.rolling(window=window, min_periods=2).apply(slope_func, raw=False)
+
+    def _add_interaction_features(self, df: pd.DataFrame) -> None:
+        """
+        Add interaction features between sensors.
+
+        Args:
+            df: DataFrame with sensor columns
+        """
+        # Basic interactions
+        df['temperature_vibration'] = df['temperature'] * df['vibration']
+        df['temperature_pressure'] = df['temperature'] / (df['pressure'] + 1e-9)  # Avoid division by zero
+        df['vibration_pressure'] = df['vibration'] * df['pressure']
+
+    def _add_delta_features(self, df: pd.DataFrame) -> None:
+        """
+        Add delta features comparing different time windows.
+
+        Args:
+            df: DataFrame with rolling features
+        """
+        for sensor in self.sensor_columns:
+            # Difference between 1h and 6h rolling means
+            df[f'{sensor}_delta_mean_1h_6h'] = (
+                df[f'{sensor}_rolling_mean_1h'] - df[f'{sensor}_rolling_mean_6h']
+            )
+
+    def _add_failure_proximity_features(self, df: pd.DataFrame) -> None:
+        """
+        Add failure proximity indicators (backward-looking only).
+
+        Args:
+            df: DataFrame with failure column
+        """
+        # Time since last failure (in hours)
+        failure_times = df[df['failure'] == 1]['timestamp']
+        if not failure_times.empty:
+            # For each row, find the most recent failure before current timestamp
+            df['hours_since_last_failure'] = df['timestamp'].apply(
+                lambda x: (x - failure_times[failure_times <= x].max()).total_seconds() / 3600
+                if not failure_times[failure_times <= x].empty else np.nan
+            )
+        else:
+            df['hours_since_last_failure'] = np.nan
+
+        # Fill NaN with large value (no recent failure)
+        df['hours_since_last_failure'] = df['hours_since_last_failure'].fillna(9999)
 
     def _handle_nans(self, df: pd.DataFrame) -> pd.DataFrame:
         """

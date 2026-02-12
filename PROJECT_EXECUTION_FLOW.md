@@ -62,7 +62,7 @@ results = run_complete_pipeline(
      - **Rolling Statistics**: Mean, std, variance (1h, 6h, 12h windows)
      - **Trend Analysis**: EMA (12h, 24h), rate of change
      - **Temporal Features**: Lag features (t-1, t-2)
-   - **Total Features**: ~45 per sensor × 3 sensors = 42 features
+- **Total Features**: ~45 per sensor × 3 sensors = 82 features (recently enhanced)
 
 3. **Data Quality Handling**
    - NaN handling: Forward/backward fill for rolling features

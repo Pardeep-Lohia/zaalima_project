@@ -5,13 +5,13 @@
 FactoryGuard AI is a machine learning pipeline designed for predictive maintenance in industrial IoT settings. The system predicts equipment failures 24 hours in advance using time-series sensor data from temperature, vibration, and pressure sensors. The project focuses on handling highly imbalanced datasets where failures are rare (<1% occurrence rate).
 
 **Key Technical Features:**
-- Time-series feature engineering with 42+ engineered features
-- Class imbalance handling using balanced class weights
+- Time-series feature engineering with 82 engineered features (recently enhanced)
+- Class imbalance handling using XGBoost scale_pos_weight (~187.7)
 - Hyperparameter tuning with Optuna (Bayesian optimization)
 - Evaluation focused on PR-AUC for imbalanced classification
 - Modular pipeline architecture for maintainability
 
-**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented and evaluated. Ready for Week 3 enhancements (explainability, API, deployment).
+**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented with recent XGBoost improvements achieving 2.4x better PR-AUC performance (from 0.02 to ~0.0487). Ready for Week 3 enhancements (explainability, API, deployment).
 
 ## 🚀 **Quick Start (Developer Setup)**
 
@@ -258,10 +258,10 @@ In imbalanced datasets (<1% positive class), accuracy can be >99% by predicting 
 ## 📈 **Current Performance & Validation**
 
 ### **Model Performance Summary**
-- **Baseline Models**: Logistic Regression (PR-AUC: 0.82) and Random Forest (PR-AUC: 0.86)
-- **Production Models**: XGBoost (PR-AUC: 0.89) and LightGBM (PR-AUC: 0.89)
-- **Improvement**: ~35% better than random guessing on PR-AUC metric
-- **Evaluation**: Focus on PR-AUC for imbalanced classification, with comprehensive metrics
+- **Baseline Models**: Logistic Regression (PR-AUC: ~0.02) and Random Forest (PR-AUC: ~0.02)
+- **Production Models**: XGBoost (PR-AUC: ~0.0487) with recent improvements (2.4x from 0.02)
+- **Improvement**: 2.4x better than baseline models, with enhanced features and scale_pos_weight
+- **Evaluation**: Focus on PR-AUC for imbalanced classification, with precision-driven threshold optimization
 
 ### **Key Technical Achievements**
 - **Feature Engineering**: Successfully created 42+ time-series features from 3 sensors

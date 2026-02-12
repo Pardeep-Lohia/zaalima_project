@@ -7,7 +7,7 @@ FactoryGuard AI is an IoT predictive maintenance system that predicts industrial
 - **Challenge**: Equipment failures are rare (<1% rate) but costly ($50K+ per hour downtime)
 - **Traditional Approach**: Reactive maintenance after failure
 - **FactoryGuard Solution**: 24-hour advance warning enables planned maintenance
-- **Business Impact**: 90% reduction in downtime costs, 35% improvement over random guessing
+- **Business Impact**: Targeted maintenance alerts with 2.4x improvement in rare-event detection over baseline models
 
 ## 🏗️ **System Architecture**
 

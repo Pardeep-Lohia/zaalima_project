@@ -245,6 +245,53 @@ class RareEventEvaluator:
         logger.info(f"Generated evaluation report for {model_name}")
         return report
 
+    def get_business_interpretation(self, threshold_metrics: Optional[Dict] = None) -> str:
+        """
+        Generate business interpretation of rare event detection results.
+
+        Args:
+            threshold_metrics: Optional precision-driven threshold metrics
+
+        Returns:
+            String with business interpretation
+        """
+        interpretation = []
+
+        # Overall performance summary
+        interpretation.append("## Business Impact Assessment")
+        interpretation.append(f"- **PR-AUC**: {self.pr_auc:.3f} (higher is better for rare events)")
+        interpretation.append(f"- **Failure Detection Rate**: {self.y_true.sum()}/{len(self.y_true)} ({self.y_true.mean():.2%})")
+
+        # Threshold-based metrics
+        if threshold_metrics:
+            alerts_per_day = threshold_metrics['alert_rate'] * 24
+            fp_per_1000 = (threshold_metrics['false_positives'] / len(self.y_true)) * 1000
+
+            interpretation.append("\n## Operational Metrics (at 60% Precision Threshold)")
+            interpretation.append(f"- **Precision**: {threshold_metrics['precision']:.1%} (alert quality)")
+            interpretation.append(f"- **Recall**: {threshold_metrics['recall']:.1%} (failure detection rate)")
+            interpretation.append(f"- **Alerts per Day**: {alerts_per_day:.1f}")
+            interpretation.append(f"- **False Positives per 1000 Predictions**: {fp_per_1000:.1f}")
+
+            # Business recommendations
+            interpretation.append("\n## Recommendations")
+            if threshold_metrics['precision'] >= 0.6:
+                interpretation.append("✓ **Threshold meets precision requirement** (>=60%)")
+            else:
+                interpretation.append("⚠ **Threshold below precision target** - consider higher threshold")
+
+            if alerts_per_day <= 10:
+                interpretation.append("✓ **Alert volume manageable** (<=10/day)")
+            else:
+                interpretation.append("⚠ **High alert volume** - may overwhelm maintenance team")
+
+            if fp_per_1000 <= 5:
+                interpretation.append("✓ **Low false positive rate** - good alert quality")
+            else:
+                interpretation.append("⚠ **High false positive rate** - too many false alarms")
+
+        return "\n".join(interpretation)
+
     def plot_comprehensive_evaluation(self, model_name: str, save_path: Optional[str] = None) -> None:
         """
         Create comprehensive evaluation plots for rare event detection.
@@ -346,6 +393,17 @@ def compare_models_rare_events(model_results: Dict[str, Dict], total_samples: in
                     'best_recall': best_threshold.loc[best_f1_idx, 'recall'],
                     'best_f1': best_threshold.loc[best_f1_idx, 'f1']
                 })
+
+        # Add precision-driven threshold metrics
+        precision_opt = results.get('precision_threshold', {})
+        if precision_opt:
+            row.update({
+                'precision_threshold': precision_opt.get('threshold', 0),
+                'precision_at_threshold': precision_opt.get('precision', 0),
+                'recall_at_threshold': precision_opt.get('recall', 0),
+                'alerts_per_day': precision_opt.get('alert_rate', 0) * 24,
+                'false_positives_per_1000': (precision_opt.get('false_positives', 0) / total_samples) * 1000
+            })
 
         comparison_data.append(row)
 

@@ -7,16 +7,16 @@ This report evaluates predictive maintenance models for detecting equipment fail
 ## Key Findings
 
 ### Best Performing Model
-- **Model**: baseline_logistic_regression
-- **PR-AUC**: 0.0667
+- **Model**: production_xgboost
+- **PR-AUC**: 0.0270
 - **Failure Recall**: 0.0000
 - **Failure Precision**: 0.0000
 
 ### Model Performance Comparison
-| model                        |    pr_auc |   accuracy |   failure_precision |   failure_recall |   failure_f1 |   best_threshold |   best_precision |   best_recall |   best_f1 |
-|:-----------------------------|----------:|-----------:|--------------------:|-----------------:|-------------:|-----------------:|-----------------:|--------------:|----------:|
-| baseline_logistic_regression | 0.0667005 |   0.822861 |                   0 |                0 |            0 |         0.560168 |       0.00759878 |     0.526316  | 0.0149813 |
-| production_xgboost           | 0.0233403 |   0.99365  |                   0 |                0 |            0 |         0.348134 |       0.166667   |     0.0526316 | 0.08      |
+| model                  |    pr_auc |   accuracy |   failure_precision |   failure_recall |   failure_f1 |   best_threshold |   best_precision |   best_recall |   best_f1 |
+|:-----------------------|----------:|-----------:|--------------------:|-----------------:|-------------:|-----------------:|-----------------:|--------------:|----------:|
+| production_xgboost     | 0.0270102 |   0.993316 |                   0 |                0 |            0 |        0.0342591 |       0.0857143  |      0.157895 | 0.111111  |
+| baseline_random_forest | 0.026699  |   0.979278 |                   0 |                0 |            0 |        0.560168  |       0.00759878 |      0.526316 | 0.0149813 |
 
 ## Recommendations
 
@@ -37,7 +37,7 @@ Based on the evaluation, we recommend using a threshold that balances recall and
 
 ### Business Impact
 - **Current Baseline**: Near-random performance (PR-AUC ≈ 0.5)
-- **Improvement**: -0.433 increase in PR-AUC
+- **Improvement**: -0.473 increase in PR-AUC
 - **Failure Detection**: 0.0% of failures can be predicted 24 hours in advance
 
 ## Technical Details
@@ -77,4 +77,4 @@ Based on the evaluation, we recommend using a threshold that balances recall and
    - Establish feedback loop for model improvement
 
 ---
-*Report generated on 2026-01-31 14:44:30*
+*Report generated on 2026-02-12 16:24:23*

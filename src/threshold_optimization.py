@@ -41,6 +41,69 @@ class ThresholdOptimizer:
         self.recall = self.recall[:min_len]
         self.thresholds = self.thresholds[:min_len]
 
+    def find_threshold_for_precision(self, min_precision: float = 0.6) -> Dict[str, Any]:
+        """
+        Find threshold that achieves at least minimum precision.
+
+        Args:
+            min_precision: Minimum precision level (0-1)
+
+        Returns:
+            Dictionary with threshold, precision, recall, and other metrics
+        """
+        # Find thresholds that achieve at least minimum precision
+        valid_indices = self.precision >= min_precision
+        if not valid_indices.any():
+            logger.warning(f"Cannot achieve precision >= {min_precision}. Using best available.")
+            best_idx = np.argmax(self.precision)
+        else:
+            # Among thresholds that meet precision, choose the one with highest recall
+            valid_recalls = self.recall[valid_indices]
+            valid_indices_array = np.where(valid_indices)[0]
+            best_idx = valid_indices_array[np.argmax(valid_recalls)]
+
+        threshold = self.thresholds[best_idx]
+        precision = self.precision[best_idx]
+        recall = self.recall[best_idx]
+
+        # Calculate predictions at this threshold
+        y_pred = (self.y_pred_proba >= threshold).astype(int)
+
+        # Calculate additional metrics
+        cm = confusion_matrix(self.y_true, y_pred)
+        tn, fp, fn, tp = cm.ravel()
+
+        results = {
+            'threshold': threshold,
+            'precision': precision,
+            'recall': recall,
+            'f1': 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0,
+            'true_positives': tp,
+            'false_positives': fp,
+            'false_negatives': fn,
+            'true_negatives': tn,
+            'alert_rate': (tp + fp) / len(self.y_true),
+            'specificity': tn / (tn + fp) if (tn + fp) > 0 else 0
+        }
+
+        logger.info(f"Threshold for {min_precision:.0%} precision: {threshold:.4f}")
+        logger.info(f"  Precision: {precision:.4f}, Recall: {recall:.4f}")
+        logger.info(f"  Alert rate: {results['alert_rate']:.4f}")
+
+        return results
+
+    def get_precision_threshold_for_evaluation(self, min_precision: float = 0.6) -> Dict[str, Any]:
+        """
+        Get precision-driven threshold results for evaluation pipeline integration.
+
+        Args:
+            min_precision: Minimum precision level (0-1)
+
+        Returns:
+            Dictionary with threshold and metrics for evaluation
+        """
+        return self.find_threshold_for_precision(min_precision)
+
     def find_threshold_for_recall(self, target_recall: float) -> Dict[str, Any]:
         """
         Find threshold that achieves at least target recall.

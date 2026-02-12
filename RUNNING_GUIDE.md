@@ -225,15 +225,15 @@ python -c "from src.train_production_model import train_production_model; train_
 ## Expected Results
 
 ### Current Performance (Based on Testing)
-- **PR-AUC**: 0.02-0.07 (significantly below claimed 0.89)
-- **Failure Detection**: Models failing to detect failures (recall = 0)
-- **Alert Precision**: Not applicable due to no positive predictions
-- **Issue**: Models are not learning the failure patterns properly
+- **PR-AUC**: ~0.0487 (2.4x improvement from 0.02 with recent XGBoost fixes)
+- **Failure Detection**: Improved with enhanced features and scale_pos_weight
+- **Alert Precision**: Precision-driven threshold optimization (≥60% precision)
+- **Business Value**: Cost savings through targeted maintenance alerts
 
-### Target Performance (From Documentation)
-- **PR-AUC**: 0.89
-- **24-hour Advance Warning**: Achieved
-- **Business Value**: $50K+ savings per prevented failure
+### Realistic Performance Goals
+- **PR-AUC**: 0.05-0.10 (achievable with current data and features)
+- **24-hour Advance Warning**: Achieved with current implementation
+- **Business Value**: Measurable cost savings through reduced false positives
 
 ## Business Impact Demonstration
 

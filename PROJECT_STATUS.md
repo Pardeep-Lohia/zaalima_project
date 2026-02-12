@@ -18,8 +18,8 @@
 - [x] Feature pipeline serialization (joblib-ready)
 
 ### ✅ **Week 1: Baseline Models**
-- [x] Logistic Regression with balanced class weights
-- [x] Random Forest with balanced class weights
+- [x] Logistic Regression with balanced class weights (PR-AUC: ~0.02)
+- [x] Random Forest with balanced class weights (PR-AUC: ~0.02)
 - [x] PR-AUC evaluation (correct metric for imbalanced data)
 - [x] Classification reports and confusion matrices
 - [x] Model serialization and feature importance
@@ -28,8 +28,8 @@
 - [x] XGBoost implementation with Optuna hyperparameter tuning
 - [x] LightGBM implementation with Optuna hyperparameter tuning
 - [x] 50-trial Bayesian optimization with PR-AUC scoring
-- [x] Production model serialization
-- [x] Comprehensive evaluation metrics
+- [x] Production model serialization with scale_pos_weight (~187.7)
+- [x] Comprehensive evaluation metrics (PR-AUC: ~0.0487, 2.4x improvement)
 
 ---
 

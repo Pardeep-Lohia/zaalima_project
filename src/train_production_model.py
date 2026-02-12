@@ -22,6 +22,8 @@ import warnings
 from .utils import setup_logging, ensure_directory, get_project_root
 from .data_preprocessing import load_and_preprocess_data, analyze_class_distribution
 from .feature_engineering import create_feature_pipeline
+from .threshold_optimization import ThresholdOptimizer
+from .enhanced_evaluation import RareEventEvaluator
 
 logger = setup_logging()
 warnings.filterwarnings('ignore')
@@ -83,12 +85,13 @@ class ProductionModelTrainer:
             PR-AUC score for the trial
         """
         class_weights = self._calculate_class_weights(y_train)
+        base_scale_pos_weight = class_weights[1] / class_weights[0]
 
-        # Define hyperparameter search space
+        # Define hyperparameter search space including scale_pos_weight
         params = {
             'objective': 'binary:logistic',
             'eval_metric': 'aucpr',  # Precision-Recall AUC
-            'scale_pos_weight': class_weights[1] / class_weights[0],  # Class weight scaling
+            'scale_pos_weight': trial.suggest_float('scale_pos_weight', 0.1 * base_scale_pos_weight, 10 * base_scale_pos_weight, log=True),
             'random_state': self.random_seed,
             'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, log=True),
             'max_depth': trial.suggest_int('max_depth', 3, 10),
@@ -232,7 +235,10 @@ class ProductionModelTrainer:
             self.model = lgb.LGBMClassifier(**default_params, verbosity=-1)
 
         # Train final model
-        self.model.fit(X_train, y_train)
+        if self.model_type == 'xgboost':
+            self.model.fit(X_train, y_train)
+        else:
+            self.model.fit(X_train, y_train)
         logger.info("Production model training completed")
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
@@ -449,11 +455,21 @@ def train_production_model(
             reports_dir / f'production_{model_type}_best_params.csv', index=False
         )
 
+    # Perform threshold optimization for precision-driven threshold
+    threshold_optimizer = ThresholdOptimizer(y_val, trainer.predict_proba(X_val)[:, 1])
+    precision_threshold = threshold_optimizer.get_precision_threshold_for_evaluation(min_precision=0.6)
+
+    # Create rare event evaluator for business interpretation
+    rare_evaluator = RareEventEvaluator(y_val, trainer.predict_proba(X_val)[:, 1], len(y_val))
+    business_interpretation = rare_evaluator.get_business_interpretation(threshold_metrics=precision_threshold)
+
     results = {
         'model_type': model_type,
         'tuned': tune_hyperparams,
         'train_results': train_results,
         'val_results': val_results,
+        'precision_threshold': precision_threshold,
+        'business_interpretation': business_interpretation,
         'feature_importance': feature_importance,
         'best_params': trainer.best_params,
         'n_features': X_train.shape[1],
