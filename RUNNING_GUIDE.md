@@ -106,7 +106,7 @@ reports/
 ```
 
 #### Key Metrics to Check
-- **PR-AUC**: Primary metric (target: >0.8 for good performance)
+- **PR-AUC**: Primary metric (current: 0.0487, 2.4x improvement from 0.02 baseline)
 - **Failure Recall**: Percentage of failures detected
 - **Precision**: Accuracy of alerts (minimizes false alarms)
 

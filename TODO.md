@@ -1,48 +1,63 @@
-# TODO: Fix XGBoost for Extreme Imbalance in Predictive Maintenance
+# FactoryGuard AI VPS Deployment TODO
 
-## Status: In Progress
+## Pre-Deployment Checklist
+- [ ] Access to blank Ubuntu 20.04 VPS with root SSH access
+- [ ] Project files ready for transfer (app.py, requirements.txt, models/, src/)
+- [ ] VPS IP address or domain name noted
+- [ ] Local machine has SCP or file transfer capability
 
-### 1. Update XGBoost Training (train_production_model.py)
-- [x] Add explicit logging of computed scale_pos_weight value
-- [x] Ensure scale_pos_weight is correctly passed in default parameters
+## VPS Initial Setup
+- [ ] Update system packages (`sudo apt update && sudo apt upgrade -y`)
+- [ ] Install required packages (python3, pip, nginx, git, ufw)
+- [ ] Configure UFW firewall (allow SSH, HTTP, HTTPS)
+- [ ] Create application directory (`/var/www/html/factoryguard`)
 
-### 2. Enhance Feature Engineering (feature_engineering.py)
-- [x] Add rolling slope calculation using linear regression over 6h windows
-- [x] Add delta features: difference between 1h and 6h rolling means
-- [x] Add failure proximity indicator (time since last failure, backward-looking only)
-- [x] Ensure no data leakage and proper NaN handling
+## File Transfer
+- [ ] Transfer project files to VPS (`/tmp/zaalima_project`)
+- [ ] Move files to application directory
+- [ ] Set proper ownership and permissions (www-data:www-data)
 
-### 3. Integrate Threshold Optimization (threshold_optimization.py)
-- [x] Add method to get precision-driven threshold results for evaluation pipeline
-- [x] Ensure threshold selection prioritizes precision >= 0.6
+## Python Environment Setup
+- [ ] Create Python virtual environment
+- [ ] Install Python dependencies from requirements.txt
+- [ ] Test application startup locally
 
-### 4. Improve Evaluation Metrics (enhanced_evaluation.py)
-- [x] Add precision/recall at selected threshold (>=0.6 precision)
-- [x] Add alerts per day calculation
-- [x] Add false positives per 1000 predictions
-- [x] Add business interpretation section with actionable insights
+## Gunicorn Configuration
+- [ ] Create gunicorn.conf.py configuration file
+- [ ] Create log directory (/var/log/factoryguard)
+- [ ] Test gunicorn startup and API endpoints
 
-### 5. Testing and Validation
-- [x] Test updated XGBoost with new features
-- [x] Validate threshold optimization integration
-- [x] Run evaluation pipeline and verify metrics
-- [x] Generate reports and compare with baseline
-- [x] Ensure time-series validation (no random splits, TimeSeriesSplit CV)
+## Nginx Configuration
+- [ ] Create nginx site configuration (/etc/nginx/sites-available/factoryguard)
+- [ ] Enable site and remove default
+- [ ] Test nginx configuration and restart service
 
-### 6. Documentation
-- [x] Update explanations of why previous model collapsed
-- [x] Document how each fix improves rare-event detection
-- [x] Provide production-grade implementation notes
+## Systemd Service Setup
+- [ ] Create factoryguard.service systemd file
+- [ ] Enable and start the service
+- [ ] Verify service status and auto-startup
 
-## ✅ **TASK COMPLETED SUCCESSFULLY**
+## Testing and Verification
+- [ ] Test health endpoint via public IP
+- [ ] Test prediction endpoint with sample data
+- [ ] Run latency tests (<50ms requirement)
+- [ ] Verify model loading and functionality
 
-All XGBoost rare-event fixes have been implemented and tested:
+## Security Hardening (Optional but Recommended)
+- [ ] Configure SSL/TLS with Let's Encrypt
+- [ ] Disable root SSH login
+- [ ] Install and configure fail2ban
+- [ ] Set up log rotation
 
-- **PR-AUC improved from 0.02 to 0.0487** (2.4x improvement)
-- **Scale_pos_weight properly calculated** (~187.7)
-- **Enhanced features**: 82 features vs 45 previously
-- **Precision-driven threshold optimization** (≥60% precision)
-- **Business metrics**: alerts/day, FP per 1000 predictions
-- **Time-series validation**: No data leakage, proper CV
+## Monitoring and Maintenance
+- [ ] Set up health check script
+- [ ] Configure backup strategy
+- [ ] Test log rotation
+- [ ] Verify monitoring scripts
 
-The FactoryGuard AI system now properly detects equipment failures 24 hours in advance with high precision for industrial predictive maintenance.
+## Final Verification
+- [ ] Confirm API is accessible publicly
+- [ ] Validate prediction accuracy and latency
+- [ ] Test service restart after reboot
+- [ ] Review all logs for errors
+- [ ] Document any custom configurations made

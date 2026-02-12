@@ -9,7 +9,7 @@ import logging
 
 from .utils import setup_logging, ensure_directory, get_project_root
 from .data_preprocessing import load_and_preprocess_data
-from .feature_engineering import create_feature_pipeline
+from .feature_engineering import create_feature_pipeline, FeatureEngineer
 
 logger = setup_logging()
 
@@ -194,11 +194,14 @@ def create_explainability_report(
 
     # Load validation data
     _, val_df = load_and_preprocess_data()
-    _, val_features = create_feature_pipeline(None, val_df, feature_pipeline_path)
 
-    # Prepare validation features
-    feature_cols = [col for col in val_features.columns if col not in ['timestamp', 'failure', 'failure_24h']]
-    X_val = val_features[feature_cols]
+    # Load existing feature pipeline
+    engineer = FeatureEngineer()
+    engineer.load_pipeline(feature_pipeline_path)
+    val_features = engineer.transform_features(val_df, scale=True)
+
+    # Use feature columns from the model to ensure consistency
+    X_val = val_features[explainer.feature_columns]
 
     # Create reports directory
     reports_dir = Path(get_project_root()) / 'reports'

@@ -247,7 +247,7 @@ class FeatureEngineer:
         df = self.create_time_series_features(df)
 
         if scale and self.is_fitted:
-            feature_cols = [col for col in df.columns if col not in ['timestamp', 'failure', 'failure_24h']]
+            feature_cols = sorted([col for col in df.columns if col not in ['timestamp', 'failure', 'failure_24h']])
             df[feature_cols] = self.scaler.transform(df[feature_cols])
             logger.info("Applied StandardScaler transformation")
 

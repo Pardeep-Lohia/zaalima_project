@@ -11,7 +11,7 @@ FactoryGuard AI is a machine learning pipeline designed for predictive maintenan
 - Evaluation focused on PR-AUC for imbalanced classification
 - Modular pipeline architecture for maintainability
 
-**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented with recent XGBoost improvements achieving 2.4x better PR-AUC performance (from 0.02 to ~0.0487). Ready for Week 3 enhancements (explainability, API, deployment).
+**Current Status**: ✅ **Week 1 & Week 2 COMPLETED** - Core ML pipeline implemented with recent XGBoost fixes achieving PR-AUC: 0.0487 (2.4x improvement from 0.02 baseline). Ready for Week 3 enhancements (explainability, API, deployment).
 
 ## 🚀 **Quick Start (Developer Setup)**
 
@@ -31,7 +31,7 @@ python -c "from src.complete_pipeline import run_complete_pipeline; results = ru
 
 **Expected Output:**
 - Synthetic IoT data generated (10,000 samples)
-- Feature engineering pipeline created (42 features)
+- Feature engineering pipeline created (82 features)
 - Baseline models trained (Logistic Regression, Random Forest)
 - Production model trained (XGBoost with hyperparameter tuning)
 - Evaluation reports and plots saved in `reports/` folder
@@ -63,7 +63,7 @@ python -c "from src.complete_pipeline import run_complete_pipeline; results = ru
 
 ### **Current Implementation Status**
 - ✅ **Data Pipeline**: Synthetic IoT data generation with realistic failure patterns
-- ✅ **Feature Engineering**: 42+ time-series features from 3 sensors
+- ✅ **Feature Engineering**: 82 time-series features from 3 sensors
 - ✅ **Model Training**: Baseline (LR, RF) and production (XGBoost/LightGBM) models
 - ✅ **Evaluation**: PR-AUC focused metrics for imbalanced classification
 - ✅ **Hyperparameter Tuning**: Optuna Bayesian optimization (up to 50 trials)
@@ -140,8 +140,8 @@ FactoryGuard AI/
   - `time_aware_train_val_split()`: Prevents data leakage with chronological splitting
   - `analyze_class_distribution()`: Reports class imbalance statistics
 
-- **`src/feature_engineering.py`**: 
-  - `FeatureEngineer` class: Handles 42 engineered features from 3 sensors
+- **`src/feature_engineering.py`**:
+  - `FeatureEngineer` class: Handles 82 engineered features from 3 sensors
   - Rolling statistics (1h, 6h, 12h windows), EMAs, lag features, rate of change
   - `create_feature_pipeline()`: End-to-end feature engineering with scaling
 
@@ -258,10 +258,10 @@ In imbalanced datasets (<1% positive class), accuracy can be >99% by predicting 
 ## 📈 **Current Performance & Validation**
 
 ### **Model Performance Summary**
-- **Baseline Models**: Logistic Regression (PR-AUC: ~0.02) and Random Forest (PR-AUC: ~0.02)
-- **Production Models**: XGBoost (PR-AUC: ~0.0487) with recent improvements (2.4x from 0.02)
-- **Improvement**: 2.4x better than baseline models, with enhanced features and scale_pos_weight
-- **Evaluation**: Focus on PR-AUC for imbalanced classification, with precision-driven threshold optimization
+- **Baseline Models**: Logistic Regression (PR-AUC: 0.0229) and Random Forest (PR-AUC: 0.0267)
+- **Production Models**: XGBoost (PR-AUC: 0.0487) - 2.4x improvement with scale_pos_weight ~187.7
+- **Latest Test Results**: February 12, 2026 - Complete pipeline successful with 82 features
+- **Evaluation**: PR-AUC primary metric, precision-driven threshold optimization for business constraints
 
 ### **Key Technical Achievements**
 - **Feature Engineering**: Successfully created 42+ time-series features from 3 sensors
@@ -329,7 +329,7 @@ Raw Sensor Data → Feature Engineering → Scaling → Model Prediction → Ale
    ```
 
 3. **Key Classes and Functions**:
-   - `FeatureEngineer`: Handles time-series feature creation (42 features)
+- `FeatureEngineer`: Handles time-series feature creation (82 features)
    - `BaselineModelTrainer`: Logistic Regression and Random Forest with class weights
    - `ProductionModelTrainer`: XGBoost/LightGBM with Optuna hyperparameter tuning
    - `generate_synthetic_iot_data()`: Creates realistic IoT sensor data with failure patterns

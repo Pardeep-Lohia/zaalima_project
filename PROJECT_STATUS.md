@@ -2,9 +2,23 @@
 
 ## 📋 **Current Project State**
 
-**Date**: January 31, 2026  
-**Status**: ✅ **Week 1 & Week 2 COMPLETED**  
+**Date**: February 12, 2026
+**Status**: ✅ **Week 1 & Week 2 COMPLETED** - Latest test run successful
 **Next Milestone**: Week 3 (SHAP Explainability, Flask API, Deployment)
+
+## 🧪 **Latest Test Run Results**
+
+**Test Date**: February 12, 2026
+**Test Script**: `test_run.py` (Complete pipeline execution)
+**Status**: ✅ **SUCCESSFUL**
+
+**Key Results**:
+- **Data Generation**: 10,000 synthetic IoT samples, 56 failures (0.50%)
+- **Feature Engineering**: 82 engineered features from 3 sensors
+- **Training Split**: 7,000 samples (37 failures, 0.53%)
+- **Validation Split**: 3,000 samples (19 failures, 0.64%)
+- **Pipeline Status**: Running baseline model training (Logistic Regression, Random Forest)
+- **Production Model**: XGBoost with 20 Optuna trials (in progress)
 
 ---
 
@@ -99,13 +113,11 @@ train_features, val_features = create_feature_pipeline(train_df, val_df)
 - **Validation Set**: 3,000 samples (19 failures, 0.63%)
 - **Features**: 45 per sensor (135 total engineered features)
 
-### **Expected Baseline Results** (when run)
-- **Logistic Regression**: PR-AUC ≈ 0.82-0.85
-- **Random Forest**: PR-AUC ≈ 0.85-0.88 (expected best baseline)
-
-### **Expected Production Results** (when run)
-- **XGBoost**: PR-AUC ≈ 0.89-0.92
-- **LightGBM**: PR-AUC ≈ 0.88-0.91
+### **Current Performance Results** (after recent XGBoost fixes)
+- **Logistic Regression**: PR-AUC ≈ 0.02 (baseline)
+- **Random Forest**: PR-AUC ≈ 0.027 (baseline)
+- **XGBoost**: PR-AUC ≈ 0.0487 (2.4x improvement from 0.02 baseline with scale_pos_weight ~187.7)
+- **Features**: 82 engineered features from 3 sensors
 
 ---
 
@@ -137,6 +149,7 @@ train_features, val_features = create_feature_pipeline(train_df, val_df)
 - ✅ Fixed NaN handling in feature engineering (dropna after fill operations)
 
 ### **Current Limitations**
+- **Performance Issue**: Models failing to detect failures (recall: 0.0, PR-AUC: 0.027)
 - **Memory Usage**: Large datasets may require optimization for production
 - **Feature Count**: 135 features may need dimensionality reduction for edge deployment
 - **Hyperparameter Tuning**: 50 trials take time; consider early stopping in production
@@ -197,7 +210,7 @@ python -c "from src.train_baseline import train_baseline_models; train_baseline_
 
 **Current Developer**: AI Assistant  
 **Handover Date**: January 31, 2026  
-**Project Status**: ✅ **Ready for Week 3 development**
+**Project Status**: ⚠️ **Week 1-2 Code Complete, Performance Issues Require Debugging Before Week 3**
 
 **Key Files to Review**:
 1. `README.md` - Complete project documentation

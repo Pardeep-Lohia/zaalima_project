@@ -153,7 +153,7 @@ results = run_complete_pipeline(
    - Feature importance plots
    - Best parameters CSV
 
-**Output**: Production model results with tuned hyperparameters and performance metrics
+**Output**: Production model results with tuned hyperparameters and performance metrics (current PR-AUC: ~0.0487, 2.4x improvement from 0.02 baseline with scale_pos_weight ~187.7)
 
 ---
 
